@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication Example</title>
+</head>
+<body>
+
+  <h1>User Registration</h1>
+  <form id="registerForm">
+    <label for="registerUsername">Username:</label>
+    <input type="text" id="registerUsername" required>
+    <label for="registerPassword">Password:</label>
+    <input type="password" id="registerPassword" required>
+    <button type="button" onclick="registerUser()">Register</button>
+  </form>
+
+  <h1>User Login</h1>
+  <form id="loginForm">
+    <label for="loginUsername">Username:</label>
+    <input type="text" id="loginUsername" required>
+    <label for="loginPassword">Password:</label>
+    <input type="password" id="loginPassword" required>
+    <button type="button" onclick="loginUser()">Login</button>
+  </form>
+
+  <h1>Getting Token Resources From Local Storage !</h1>
+  <div id="protectedResource"></div>
+  <h1 id="demo"></h1>
+<button onclick=" accessProtectedResource()" >AUTH</button>
+  <script>
+    async function registerUser() {
+      const username = document.getElementById('registerUsername').value;
+      const password = document.getElementById('registerPassword').value;
+
+      const response = await fetch('/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const result = await response.json();
+      if(result.message=="User already exists"){
+
+        document.getElementById('demo').innerHTML=".....";
+        var ele=document.getElementById('registerUsername');
+        ele.style.border="3px solid red";
+    
+        }
+
+      alert(result.message);
+    }
+
+    async function loginUser() {
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const result = await response.json();
+
+      if (result.token) {
+        localStorage.setItem('token', result.token);//Here storing a token in LocalStorage
+        
+        alert('Login successful! Token stored in localStorage.');
+      } else {
+        alert(result.message);
+      }
+    }
+
+    async function accessProtectedResource() {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        alert('Please log in first.');
+        return;
+      }
+
+      const response = await fetch('/protected', {
+        headers: {
+          'Authorization': token,//this token is sending to the backend protected router to decrypt the user
+        },
+      });
+
+      const result = await response.json();
+      alert(result.message);
+    }
+
+    // Example: Access protected resource on page load
+    //accessProtectedResource();//call is give to the button
+
+
+    async function auth(){
+
+  //body
+    }
+    
+
+  </script>
+
+</body>
+</html>

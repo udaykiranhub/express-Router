@@ -1,0 +1,22 @@
+
+router1.all("/hello",function(req,res){
+
+try{
+   
+    
+    var data=req.body;
+  
+    res.send(data);
+    console.log(data)
+
+}
+catch(err)
+{
+ 
+    console.log("Error on routing method!"+err);
+}
+
+
+
+});
+///////////////
